@@ -1,0 +1,22 @@
+# Changes here will be overwritten by Copier
+_commit: 9271f9a
+_src_path: gh:browniebroke/pypackage-template
+add_me_as_contributor: true
+cli_name: pyomie
+copyright_year: 2022-2024
+documentation: true
+email: luuuis@fastmail.com
+full_name: Luis Miranda
+github_username: luuuis
+has_cli: true
+initial_commit: true
+open_source_license: Apache Software License 2.0
+package_name: pyomie
+project_name: pyomie
+project_short_description: A client for OMIE - Spain and Portugal electricity market
+    data
+project_slug: pyomie
+run_poetry_install: false
+setup_github: false
+setup_pre_commit: true
+
