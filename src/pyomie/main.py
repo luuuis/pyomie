@@ -83,7 +83,6 @@ async def _fetch_to_dict(
         for k in hourly_values:
             hourly = hourly_values[k]
             if k in short_names:
-                # hourly & daily avg/sum
                 key = short_names[k]
                 file_data.update({f"{key}": hourly})
             else:
