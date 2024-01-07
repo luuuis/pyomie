@@ -72,7 +72,7 @@ async def _fetch_to_dict(
             ]
             for row in rows
         }
-        fetched = dt.datetime.now(dt.UTC)
+        fetched = dt.datetime.now(dt.timezone.utc)
 
         file_data = {
             "header": header,
