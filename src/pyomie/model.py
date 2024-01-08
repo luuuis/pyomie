@@ -19,7 +19,7 @@ _DataT = TypeVar("_DataT")
 
 
 class SpotData(NamedTuple):
-    """OMIE marginal price (spot) market results for a given date."""
+    """OMIE marginal price market results for a given date."""
 
     url: str
     """URL where the data was obtained"""

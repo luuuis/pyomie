@@ -18,6 +18,9 @@ DEFAULT_TIMEOUT = dt.timedelta(seconds=10)
 
 _LOGGER = logging.getLogger(__name__)
 
+
+_DataT = TypeVar("_DataT")
+
 _HOURS = list(range(1, 26))
 #: Max number of hours in a day (on the day that DST ends).
 
@@ -64,7 +67,7 @@ class OMIEDayResult(NamedTuple):
     """Series data for the given day."""
 
 
-async def _fetch_to_dict(
+async def _fetch_and_make_results(
     session: ClientSession,
     source: str,
     market_date: dt.date,
@@ -116,7 +119,9 @@ async def spot_price(
     dc = DateComponents.decompose(market_date)
     source = f"https://www.omie.es/sites/default/files/dados/AGNO_{dc.yy}/MES_{dc.MM}/TXT/INT_PBC_EV_H_1_{dc.dd_MM_yy}_{dc.dd_MM_yy}.TXT"
 
-    return await _fetch_to_dict(client_session, source, dc.date, _make_spot_data)
+    return await _fetch_and_make_results(
+        client_session, source, dc.date, _make_spot_data
+    )
 
 
 async def adjustment_price(
@@ -133,7 +138,7 @@ async def adjustment_price(
         dc = DateComponents.decompose(market_date)
         source = f"https://www.omie.es/sites/default/files/dados/AGNO_{dc.yy}/MES_{dc.MM}/TXT/INT_MAJ_EV_H_{dc.dd_MM_yy}_{dc.dd_MM_yy}.TXT"
 
-        return await _fetch_to_dict(
+        return await _fetch_and_make_results(
             client_session, source, market_date, _make_adjustment_data
         )
 
