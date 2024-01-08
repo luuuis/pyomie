@@ -1,7 +1,7 @@
 {
   "header": "OMIE - Mercado de electricidad;Fecha Emisi\u00f3n :15/06/2023 - 22:22;;15/06/2023;Precio definitivo horario del mecanismo de ajuste a los consumidores en el mercado (EUR/MWh);;;;",
   "market_date": "2023-06-15",
-  "source": "https://www.omie.es/sites/default/files/dados/AGNO_2023/MES_06/TXT/INT_MAJ_EV_H_15_06_2023_15_06_2023.TXT",
+  "url": "https://www.omie.es/sites/default/files/dados/AGNO_2023/MES_06/TXT/INT_MAJ_EV_H_15_06_2023_15_06_2023.TXT",
   "adjustment_price_es": [
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0

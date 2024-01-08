@@ -3,17 +3,22 @@ from __future__ import annotations
 import csv
 import datetime as dt
 import logging
-from typing import Callable, NamedTuple
+from typing import Callable, NamedTuple, TypeVar
 
 from aiohttp import ClientSession
 
-from pyomie.model import OMIEResults
+from pyomie.model import (
+    AdjustmentData,
+    OMIEDataSeries,
+    OMIEResults,
+    SpotData,
+)
 
 DEFAULT_TIMEOUT = dt.timedelta(seconds=10)
 
 _LOGGER = logging.getLogger(__name__)
 
-_HOURS = list(range(25))
+_HOURS = list(range(1, 26))
 #: Max number of hours in a day (on the day that DST ends).
 
 ADJUSTMENT_END_DATE = dt.date(2024, 1, 1)
@@ -30,7 +35,6 @@ ADJUSTMENT_END_DATE = dt.date(2024, 1, 1)
 # | 02:30 | Intraday 4  |  X   |  X   |        |       |
 # | 05:30 | Intraday 5  |  X   |  X   |        |       |
 # | 10:30 | Intraday 6  |  X   |  X   |        |       |
-# | 13:30 | Day-ahead   |      |      |   X    |   X   |
 # | 16:30 | Intraday 1  |      |      |   X    |   X   |
 # | 18:30 | Intraday 2  |  X   |  X   |   X    |   X   |
 # | 22:30 | Intraday 3  |      |      |   X    |   X   |
@@ -40,17 +44,32 @@ ADJUSTMENT_END_DATE = dt.date(2024, 1, 1)
 # - https://www.omie.es/en/mercado-de-electricidad
 # - https://www.omie.es/sites/default/files/inline-files/intraday_and_continuous_markets.pdf
 
-DateFactory = Callable[
-    [], dt.date
-]  #: Used by the coordinator to work out the market date to fetch.
+DateFactory = Callable[[], dt.date]
+#: Used by the coordinator to work out the market date to fetch.
+
+OMIEDataT = TypeVar("OMIEDataT")
+#: Generic data contained within an OMIE result
+
+
+class OMIEDayResult(NamedTuple):
+    """Data pertaining to a single day exposed in OMIE APIs."""
+
+    url: str
+    """URL where the data was obtained"""
+    market_date: dt.date
+    """The date that these results pertain to."""
+    header: str
+    """File header."""
+    series: OMIEDataSeries
+    """Series data for the given day."""
 
 
 async def _fetch_to_dict(
     session: ClientSession,
     source: str,
     market_date: dt.date,
-    short_names: dict[str, str],
-) -> tuple[OMIEResults, str] | None:
+    make_result: Callable[[OMIEDayResult], OMIEDataT],
+) -> OMIEResults[OMIEDataT] | None:
     async with await session.get(
         source, timeout=DEFAULT_TIMEOUT.total_seconds()
     ) as resp:
@@ -64,97 +83,58 @@ async def _fetch_to_dict(
 
         reader = csv.reader(csv_data, delimiter=";", skipinitialspace=True)
         rows = list(reader)
-        hourly_values = {
-            row[0]: [
-                _to_float(row[h + 1])
-                for h in _HOURS
-                if len(row) > h + 1 and row[h + 1] != ""
-            ]
+        day_series: OMIEDataSeries = {
+            row[0]: [_to_float(row[h]) for h in _HOURS if len(row) > h and row[h]]
             for row in rows
         }
-        fetched = dt.datetime.now(dt.timezone.utc)
 
-        file_data = {
-            "header": header,
-            "market_date": market_date.isoformat(),
-            "source": source,
-        }
+        omie_meta = OMIEDayResult(
+            header=header,
+            market_date=market_date,
+            url=source,
+            series=day_series,
+        )
 
-        for k in hourly_values:
-            hourly = hourly_values[k]
-            if k in short_names:
-                key = short_names[k]
-                file_data.update({f"{key}": hourly})
-            else:
-                if k:
-                    # unknown rows, do not process
-                    file_data.update({k: hourly})
-
-        return (
-            OMIEResults(
-                updated_at=fetched, market_date=market_date, contents=file_data
-            ),
-            response_text,
+        return OMIEResults(
+            updated_at=dt.datetime.now(dt.timezone.utc),
+            market_date=market_date,
+            contents=make_result(omie_meta),
+            raw=response_text,
         )
 
 
 async def spot_price(
     client_session: ClientSession, market_date: dt.date
-) -> tuple[OMIEResults, str] | None:
+) -> OMIEResults[SpotData] | None:
     """
     Fetches the marginal price data for a given date.
 
     :param client_session: the HTTP session to use
     :param market_date: the date to fetch data for
-    :return:  an optional tuple containing the parsed and unparsed results
+    :return: the SpotData or None
     """
     dc = DateComponents.decompose(market_date)
     source = f"https://www.omie.es/sites/default/files/dados/AGNO_{dc.yy}/MES_{dc.MM}/TXT/INT_PBC_EV_H_1_{dc.dd_MM_yy}_{dc.dd_MM_yy}.TXT"
 
-    return await _fetch_to_dict(
-        client_session,
-        source,
-        dc.date,
-        {
-            "Energía total con bilaterales del mercado Ibérico (MWh)": "energy_with_bilaterals_es_pt",  # noqa: E501
-            "Energía total de compra sistema español (MWh)": "energy_purchases_es",
-            "Energía total de compra sistema portugués (MWh)": "energy_purchases_pt",
-            "Energía total de venta sistema español (MWh)": "energy_sales_es",
-            "Energía total de venta sistema portugués (MWh)": "energy_sales_pt",
-            "Energía total del mercado Ibérico (MWh)": "energy_es_pt",
-            "Exportación de España a Portugal (MWh)": "energy_export_es_to_pt",
-            "Importación de España desde Portugal (MWh)": "energy_import_es_from_pt",
-            "Precio marginal en el sistema español (EUR/MWh)": "spot_price_es",
-            "Precio marginal en el sistema portugués (EUR/MWh)": "spot_price_pt",
-        },
-    )
+    return await _fetch_to_dict(client_session, source, dc.date, _make_spot_data)
 
 
 async def adjustment_price(
     client_session: ClientSession, market_date: dt.date
-) -> tuple[OMIEResults, str] | None:
+) -> OMIEResults[AdjustmentData] | None:
     """
     Fetches the adjustment mechanism data for a given date.
 
     :param client_session: the HTTP session to use
     :param market_date: the date to fetch data for
-    :return:  an optional tuple containing the parsed and unparsed results
+    :return: the AdjustmentData or None
     """
     if market_date < ADJUSTMENT_END_DATE:
         dc = DateComponents.decompose(market_date)
         source = f"https://www.omie.es/sites/default/files/dados/AGNO_{dc.yy}/MES_{dc.MM}/TXT/INT_MAJ_EV_H_{dc.dd_MM_yy}_{dc.dd_MM_yy}.TXT"
 
         return await _fetch_to_dict(
-            client_session,
-            source,
-            market_date,
-            {
-                "Precio de ajuste en el sistema español (EUR/MWh)": "adjustment_price_es",  # noqa: E501
-                "Precio de ajuste en el sistema portugués (EUR/MWh)": "adjustment_price_pt",  # noqa: E501
-                "Energía horaria sujeta al MAJ a los consumidores MIBEL (MWh)": "adjustment_energy",  # noqa: E501
-                "Energía horaria sujeta al mecanismo de ajuste a los consumidores MIBEL (MWh)": "adjustment_energy",  # noqa: E501
-                "Cuantía unitaria del ajuste (EUR/MWh)": "adjustment_unit_price",
-            },
+            client_session, source, market_date, _make_adjustment_data
         )
 
     else:
@@ -162,8 +142,42 @@ async def adjustment_price(
         return None
 
 
-def _to_float(n: str) -> float | None:
-    return n if n is None else float(n.replace(",", "."))
+def _to_float(n: str) -> float:
+    return float(n.replace(",", "."))
+
+
+def _make_spot_data(res: OMIEDayResult) -> SpotData:
+    s = res.series
+    return SpotData(
+        header=res.header,
+        market_date=res.market_date.isoformat(),
+        url=res.url,
+        energy_total_es_pt=s["Energía total con bilaterales del mercado Ibérico (MWh)"],
+        energy_purchases_es=s["Energía total de compra sistema español (MWh)"],
+        energy_purchases_pt=s["Energía total de compra sistema portugués (MWh)"],
+        energy_sales_es=s["Energía total de venta sistema español (MWh)"],
+        energy_sales_pt=s["Energía total de venta sistema portugués (MWh)"],
+        energy_es_pt=s["Energía total del mercado Ibérico (MWh)"],
+        energy_export_es_to_pt=s["Exportación de España a Portugal (MWh)"],
+        energy_import_es_from_pt=s["Importación de España desde Portugal (MWh)"],
+        spot_price_es=s["Precio marginal en el sistema español (EUR/MWh)"],
+        spot_price_pt=s["Precio marginal en el sistema portugués (EUR/MWh)"],
+    )
+
+
+def _make_adjustment_data(res: OMIEDayResult) -> AdjustmentData:
+    s = res.series
+    return AdjustmentData(
+        header=res.header,
+        market_date=res.market_date.isoformat(),
+        url=res.url,
+        adjustment_price_es=s["Precio de ajuste en el sistema español (EUR/MWh)"],
+        adjustment_price_pt=s["Precio de ajuste en el sistema portugués (EUR/MWh)"],
+        adjustment_energy=s[
+            "Energía horaria sujeta al mecanismo de ajuste a los consumidores MIBEL (MWh)"  # noqa: E501
+        ],
+        adjustment_unit_price=s["Cuantía unitaria del ajuste (EUR/MWh)"],
+    )
 
 
 class DateComponents(NamedTuple):

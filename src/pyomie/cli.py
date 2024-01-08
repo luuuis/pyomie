@@ -11,7 +11,7 @@ import typer
 from aiohttp import ClientSession
 
 from pyomie.main import adjustment_price, spot_price
-from pyomie.model import OMIEResults
+from pyomie.model import OMIEResults, T
 
 app = typer.Typer()
 
@@ -57,17 +57,18 @@ def adjustment(
 
 def _sync_fetch_and_print(
     fetch_omie_data: Callable[
-        [ClientSession, dt.date], Awaitable[tuple[OMIEResults, str] | None]
+        [ClientSession, dt.date], Awaitable[OMIEResults[T] | None]
     ],
     market_date: dt.date,
-    raw: bool,
+    print_raw: bool,
 ) -> None:
     async def fetch_and_print() -> None:
         async with aiohttp.ClientSession() as session:
             fetched_data = await fetch_omie_data(session, market_date)
             if fetched_data:
-                parsed, unparsed = fetched_data
-                sys.stdout.write(unparsed if raw else json.dumps(parsed.contents))
+                sys.stdout.write(
+                    fetched_data.raw if print_raw else json.dumps(fetched_data.contents)
+                )
 
     asyncio.get_event_loop().run_until_complete(fetch_and_print())
 
