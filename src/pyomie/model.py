@@ -12,7 +12,7 @@ OMIEDayHours = list[float]
 OMIEDataSeries = dict[str, OMIEDayHours]
 #: A dict containing hourly data for several data series.
 
-T = TypeVar("T")
+_DataT = TypeVar("_DataT")
 
 
 #: TypeVar used for generic named tuples
@@ -56,7 +56,7 @@ class AdjustmentData(NamedTuple):
     adjustment_unit_price: OMIEDayHours
 
 
-class OMIEResults(NamedTuple, Generic[T]):
+class OMIEResults(NamedTuple, Generic[_DataT]):
     """OMIE market results for a given date."""
 
     updated_at: datetime
@@ -65,7 +65,7 @@ class OMIEResults(NamedTuple, Generic[T]):
     market_date: date
     """The day that the data relates to."""
 
-    contents: T
+    contents: _DataT
     """The data fetched from OMIE."""
 
     raw: str

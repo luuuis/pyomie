@@ -4,14 +4,16 @@ import asyncio
 import datetime as dt
 import json
 import sys
-from typing import Awaitable, Callable
+from typing import Awaitable, Callable, TypeVar
 
 import aiohttp
 import typer
 from aiohttp import ClientSession
 
 from pyomie.main import adjustment_price, spot_price
-from pyomie.model import OMIEResults, T
+from pyomie.model import OMIEResults
+
+_DataT = TypeVar("_DataT")
 
 app = typer.Typer()
 
@@ -57,7 +59,7 @@ def adjustment(
 
 def _sync_fetch_and_print(
     fetch_omie_data: Callable[
-        [ClientSession, dt.date], Awaitable[OMIEResults[T] | None]
+        [ClientSession, dt.date], Awaitable[OMIEResults[_DataT] | None]
     ],
     market_date: dt.date,
     print_raw: bool,
