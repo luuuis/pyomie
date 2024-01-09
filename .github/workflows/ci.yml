@@ -82,14 +82,14 @@ jobs:
 
       # Do a dry run of PSR
       - name: Test release
-        uses: luuuis/python-semantic-release@main
+        uses: luuuis/python-semantic-release@master
         if: github.ref_name != 'main'
         with:
           root_options: --noop
 
       # On main branch: actual PSR + upload to PyPI & GitHub
       - name: Release
-        uses: luuuis/python-semantic-release@main
+        uses: luuuis/python-semantic-release@master
         id: release
         if: github.ref_name == 'main'
         with:
