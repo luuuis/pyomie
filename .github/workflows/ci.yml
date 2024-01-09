@@ -85,14 +85,14 @@ jobs:
           python-version: 3.11
       # Do a dry run of PSR
       - name: Test release
-        uses: python-semantic-release/python-semantic-release@v8.7.2
+        uses: luuuis/python-semantic-release@a12c8c0b7c0c0bda0e45e692da80a1ee1744b125
         if: github.ref_name != 'main'
         with:
           root_options: --noop
 
       # On main branch: actual PSR + upload to PyPI & GitHub
       - name: Release
-        uses: python-semantic-release/python-semantic-release@v8.7.2
+        uses: luuuis/python-semantic-release@a12c8c0b7c0c0bda0e45e692da80a1ee1744b125
         id: release
         if: github.ref_name == 'main'
         with:
