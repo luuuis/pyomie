@@ -79,7 +79,10 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ github.head_ref || github.ref_name }}
-
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
       # Do a dry run of PSR
       - name: Test release
         uses: python-semantic-release/python-semantic-release@v8.7.2
@@ -100,7 +103,7 @@ jobs:
         if: steps.release.outputs.released == 'true'
 
       - name: Publish package distributions to GitHub Releases
-        uses: luuuis/upload-to-gh-release@main
+        uses: python-semantic-release/upload-to-gh-release@main
         if: steps.release.outputs.released == 'true'
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
