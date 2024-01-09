@@ -39,12 +39,13 @@ async def test_spot_price_24h_day():
             result = await spot_price(session, dt.date(2024, 1, 7))
             assert result is not None
 
-            parsed, raw = result if result else (None, None)
             fixture_contents = json.loads(
                 read_file("INT_PBC_EV_H_1_07_01_2024_07_01_2024.json")
             )
 
-            diff = DeepDiff(t1=fixture_contents, t2=parsed.contents, ignore_order=True)
+            diff = DeepDiff(
+                t1=fixture_contents, t2=result.contents._asdict(), ignore_order=True
+            )
             assert str(diff) == "{}"
 
 
@@ -84,10 +85,11 @@ async def test_adjustment_price_24h_day():
             result = await adjustment_price(session, dt.date(2023, 6, 15))
             assert result is not None
 
-            parsed, raw = result
             fixture_contents = json.loads(
                 read_file("INT_MAJ_EV_H_15_06_2023_15_06_2023.json")
             )
 
-            diff = DeepDiff(t1=fixture_contents, t2=parsed.contents, ignore_order=True)
+            diff = DeepDiff(
+                t1=fixture_contents, t2=result.contents._asdict(), ignore_order=True
+            )
             assert str(diff) == "{}"

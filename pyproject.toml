@@ -2,7 +2,7 @@
 name = "pyomie"
 version = "0.1.0"
 description = "A client for OMIE - Spain and Portugal electricity market data"
-authors = ["Luis Miranda <luuuis@fastmail.com>"]
+authors = ["Luis Miranda <soft.road8065@fastmail.com>"]
 license = "Apache Software License 2.0"
 readme = "README.md"
 repository = "https://github.com/luuuis/pyomie"
@@ -17,6 +17,7 @@ classifiers = [
 packages = [
     { include = "pyomie", from = "src" },
 ]
+keywords    = ["omie", "electricity", "spain", "portugal", "MIBEL"]
 
 [tool.poetry.urls]
 "Bug Tracker" = "https://github.com/luuuis/pyomie/issues"
@@ -26,7 +27,7 @@ packages = [
 pyomie = "pyomie.cli:app"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.11"
 rich = ">=10"
 typer = {extras = ["all"], version = "^0.9.0"}
 aiohttp = "^3.9.1"
