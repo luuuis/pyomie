@@ -15,7 +15,7 @@ from pyomie.model import OMIEResults
 
 _NamedTupleT = TypeVar("_NamedTupleT", bound=NamedTuple)
 
-app = typer.Typer()
+app = typer.Typer(add_completion=False)
 
 _DATE_DEFAULT = "today's date"
 
@@ -38,7 +38,7 @@ def spot(
         default=False, help="Print the CSV as returned by OMIE, without parsing."
     ),
 ) -> None:
-    """Fetches the OMIE spot price data."""
+    """Fetch the OMIE spot price data."""
     _fetch_and_print(spot_price, date, csv)
 
 
@@ -53,7 +53,7 @@ def adjustment(
         default=False, help="Print the CSV as returned by OMIE, without parsing."
     ),
 ) -> None:
-    """Fetches the OMIE adjustment mechanism data."""
+    """Fetch the OMIE adjustment mechanism data (2022-06-14 to 2023-12-31)."""
     _fetch_and_print(adjustment_price, date, csv)
 
 
