@@ -26,6 +26,9 @@
   <a href="https://pypi.org/project/pyomie/">
     <img src="https://img.shields.io/pypi/v/pyomie.svg?logo=python&logoColor=fff&style=flat-square" alt="PyPI Version">
   </a>
+  <a href="https://pypi.org/project/pyomie/">
+    <img src="https://img.shields.io/pypi/dm/pyomie" alt="pypy downloads">
+  </a>
   <img src="https://img.shields.io/pypi/pyversions/pyomie.svg?style=flat-square&logo=python&amp;logoColor=fff" alt="Supported Python versions">
   <img src="https://img.shields.io/pypi/l/pyomie.svg?style=flat-square" alt="License">
 </p>
