@@ -2,6 +2,32 @@
 
 
 
+## v0.1.1 (2024-01-09)
+
+### Chore
+
+* chore: use forked python-semantic-release running on Python 3.12 ([`1d3ba5f`](https://github.com/luuuis/pyomie/commit/1d3ba5fe2a5b243b1b263a04f4ca28b04089ce9c))
+
+### Ci
+
+* ci: use luuuis/python-semantic-release running on Python 3.12 (#7) ([`2aba05e`](https://github.com/luuuis/pyomie/commit/2aba05e473ecb9405b00eb5fd02f3b0bbab9985c))
+
+* ci: use GitHub setup python action to ensure correct version ([`d0a2dea`](https://github.com/luuuis/pyomie/commit/d0a2dea8946f82e0b36251644809a638ba168503))
+
+* ci: use forked upload-to-gh-release with Python 3.12
+
+upstream uses Python 3.10, which this project does not support any more. ([`92b1e44`](https://github.com/luuuis/pyomie/commit/92b1e4486582c02b11be6ca86b5fc862566c9f95))
+
+### Fix
+
+* fix: rework lib to add static typing info (#6)
+
+This is a breaking change but not applying semver since we&#39;re still in 0.x.
+
+* fix: reworked the whole lib, use NamedTuple for returned data
+* ci: python &gt;= 3.11 ([`1527fc1`](https://github.com/luuuis/pyomie/commit/1527fc12b532f0ba6fb5af6991698dfbed43f7bb))
+
+
 ## v0.1.0 (2024-01-07)
 
 ### Ci
