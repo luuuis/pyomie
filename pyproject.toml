@@ -3,7 +3,7 @@ name = "pyomie"
 version = "0.1.2"
 description = "A client for OMIE - Spain and Portugal electricity market data"
 authors = ["Luis Miranda <soft.road8065@fastmail.com>"]
-license = "Apache Software License 2.0"
+license = "Apache-2.0"
 readme = "README.md"
 repository = "https://github.com/luuuis/pyomie"
 documentation = "https://pyomie.readthedocs.io"
@@ -41,6 +41,7 @@ pytest-cov = "^3.0"
 aioresponses = "^0.7.6"
 deepdiff = "^6.7.1"
 pytest-asyncio = "^0.23.3"
+pre-commit = "^4.3.0"
 
 [tool.poetry.group.docs]
 optional = true
