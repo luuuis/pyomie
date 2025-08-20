@@ -41,6 +41,7 @@ pytest-cov = "^3.0"
 aioresponses = "^0.7.6"
 deepdiff = "^6.7.1"
 pytest-asyncio = "^0.23.3"
+pre-commit = "^4.3.0"
 
 [tool.poetry.group.docs]
 optional = true
