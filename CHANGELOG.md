@@ -1,6 +1,18 @@
 # CHANGELOG
 
 
+## v0.1.3 (2025-08-20)
+
+### Bug Fixes
+
+- Amend license name so PyPI recognises it ([#15](https://github.com/luuuis/pyomie/pull/15),
+  [`5021d9a`](https://github.com/luuuis/pyomie/commit/5021d9a572bde7673aa84f256cb8f638e9bb2c9e))
+
+* chore: add pre-commit as dev dependency
+
+* fix: amend the license name so PyPI recognises it
+
+
 ## v0.1.2 (2025-08-07)
 
 ### Bug Fixes
