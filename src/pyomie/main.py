@@ -172,18 +172,27 @@ def _to_float(n: str) -> float:
     return float(n.replace(",", "."))
 
 
-def get_data_format(day_series: OMIEDataSeries) -> str:
+def get_data_format(day_series: OMIEDataSeries | dict) -> str:
     """
     Determine the data format (hourly vs quarter-hourly) based on the number of values.
     
-    :param day_series: The parsed OMIE data series
+    :param day_series: The parsed OMIE data series or NamedTuple asdict
     :return: 'hourly' if data has ~24 values, 'quarter-hourly' if ~96 values, 'unknown' otherwise
     """
     if not day_series:
         return "unknown"
     
-    # Check the first series to determine format
-    first_series = next(iter(day_series.values()))
+    # Find the first list of values to determine format
+    # This handles both OMIEDataSeries and NamedTuple._asdict()
+    first_series = None
+    for value in day_series.values():
+        if isinstance(value, list) and len(value) > 0:
+            first_series = value
+            break
+    
+    if first_series is None:
+        return "unknown"
+    
     value_count = len(first_series)
     
     if 20 <= value_count <= 30:  # Allow some tolerance for DST days

@@ -140,3 +140,5 @@ async def test_quarter_hourly_vs_hourly_detection():
             quarter_hourly_result = await spot_price(session, dt.date(2024, 1, 7))
             assert quarter_hourly_result is not None
             assert len(quarter_hourly_result.contents.spot_price_es) == 96
+
+

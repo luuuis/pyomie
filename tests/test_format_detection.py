@@ -88,3 +88,5 @@ def test_format_detection_realistic_data():
         "energy_sales_es": [14296.5] * 96,
     }
     assert get_data_format(quarter_hourly_omie_data) == "quarter-hourly"
+
+

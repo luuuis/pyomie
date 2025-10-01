@@ -158,3 +158,5 @@ async def test_mixed_format_handling():
         # Both results should be valid and properly typed
         assert hourly_result.market_date == quarter_hourly_result.market_date
         assert hourly_result.url == quarter_hourly_result.url
+
+
