@@ -1,6 +1,45 @@
 # CHANGELOG
 
 
+## v1.0.0 (2025-10-01)
+
+### Chores
+
+- **build**: Skip commitlint on main ([#19](https://github.com/luuuis/pyomie/pull/19),
+  [`3cb8144`](https://github.com/luuuis/pyomie/commit/3cb8144ff5a7e4c64a7cd08d36ce2d54faa9c20c))
+
+chore: skip commitlint on main
+
+### Features
+
+- Omie quarter-hourly pricing support ([#18](https://github.com/luuuis/pyomie/pull/18),
+  [`45ee162`](https://github.com/luuuis/pyomie/commit/45ee162de0d21627e75729faa97565f933eef6bc))
+
+* fix: remove references to MIBEL adjustment price
+
+* chore: set poetry in .tool-versions
+
+* chore: remove unused util
+
+* chore: unignore CLI test
+
+BREAKING CHANGE: removed support for dates prior to 2025-10-01. prices are now reported on a
+  quarter-hourly basis, with 96 data points for each day (or 92 or 100 in DST start/end). energy
+  flows are reported as MW per 15-minute interval. SpotData property names have thus changed and
+  clients must update their code accordingly.
+
+BREAKING CHANGE: removes support MIBEL adjustment pricing
+
+### Breaking Changes
+
+- Removed support for dates prior to 2025-10-01. prices are now reported on a quarter-hourly basis,
+  with 96 data points for each day (or 92 or 100 in DST start/end). energy flows are reported as MW
+  per 15-minute interval. SpotData property names have thus changed and clients must update their
+  code accordingly.
+
+- Removes support MIBEL adjustment pricing
+
+
 ## v0.1.3 (2025-08-20)
 
 ### Bug Fixes
