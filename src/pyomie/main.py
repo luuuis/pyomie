@@ -21,8 +21,8 @@ _LOGGER = logging.getLogger(__name__)
 
 _DataT = TypeVar("_DataT")
 
-_HOURS = list(range(1, 26))
-#: Max number of hours in a day (on the day that DST ends).
+_HOURS = list(range(1, 97))
+#: Max number of quarter-hourly intervals in a day (24 hours × 4 quarters = 96).
 
 ADJUSTMENT_END_DATE = dt.date(2024, 1, 1)
 #: The date on which the adjustment mechanism is no longer applicable.
@@ -86,8 +86,29 @@ async def _fetch_and_make_results(
 
         reader = csv.reader(csv_data, delimiter=";", skipinitialspace=True)
         rows = list(reader)
+        
+        # Parse the header row to determine the format (hourly vs quarter-hourly)
+        data_format = "unknown"
+        if len(rows) >= 2:
+            header_row = rows[1]  # Second row contains the time intervals
+            column_count = len([col for col in header_row if col and col.strip()])
+            
+            # Determine if we have quarter-hourly data (96 columns) or hourly data (24 columns)
+            if column_count >= 90:  # Quarter-hourly format (96 columns)
+                time_columns = list(range(1, min(97, column_count + 1)))
+                data_format = "quarter-hourly"
+                _LOGGER.info(f"Detected quarter-hourly data format with {column_count} columns")
+            else:  # Hourly format (24 columns)
+                time_columns = list(range(1, min(25, column_count + 1)))
+                data_format = "hourly"
+                _LOGGER.info(f"Detected hourly data format with {column_count} columns")
+        else:
+            # Fallback to old behavior if we can't determine format
+            time_columns = _HOURS
+            data_format = "fallback"
+        
         day_series: OMIEDataSeries = {
-            row[0]: [_to_float(row[h]) for h in _HOURS if len(row) > h and row[h]]
+            row[0]: [_to_float(row[h]) for h in time_columns if len(row) > h and row[h]]
             for row in rows
         }
 
@@ -149,6 +170,28 @@ async def adjustment_price(
 
 def _to_float(n: str) -> float:
     return float(n.replace(",", "."))
+
+
+def get_data_format(day_series: OMIEDataSeries) -> str:
+    """
+    Determine the data format (hourly vs quarter-hourly) based on the number of values.
+    
+    :param day_series: The parsed OMIE data series
+    :return: 'hourly' if data has ~24 values, 'quarter-hourly' if ~96 values, 'unknown' otherwise
+    """
+    if not day_series:
+        return "unknown"
+    
+    # Check the first series to determine format
+    first_series = next(iter(day_series.values()))
+    value_count = len(first_series)
+    
+    if 20 <= value_count <= 30:  # Allow some tolerance for DST days
+        return "hourly"
+    elif 90 <= value_count <= 100:  # Allow some tolerance
+        return "quarter-hourly"
+    else:
+        return "unknown"
 
 
 def _make_spot_data(res: OMIEDayResult) -> SpotData:
