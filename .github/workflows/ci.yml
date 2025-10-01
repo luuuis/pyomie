@@ -25,6 +25,7 @@ jobs:
   commitlint:
     name: Lint Commit Messages
     runs-on: ubuntu-latest
+    if: github.ref != 'refs/heads/main'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -66,7 +67,11 @@ jobs:
       - test
       - lint
       - commitlint
-
+    if: |
+      always() &&
+      needs.test.result == 'success' &&
+      needs.lint.result == 'success' &&
+      needs.commitlint.result != 'failure'
     runs-on: ubuntu-latest
     environment: release
     concurrency: release
