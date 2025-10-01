@@ -10,7 +10,7 @@ import aiohttp
 import typer
 from aiohttp import ClientSession
 
-from pyomie.main import adjustment_price, spot_price
+from pyomie.main import spot_price
 from pyomie.model import OMIEResults
 
 _NamedTupleT = TypeVar("_NamedTupleT", bound=NamedTuple)
@@ -40,21 +40,6 @@ def spot(
 ) -> None:
     """Fetch the OMIE spot price data."""
     _fetch_and_print(spot_price, date, csv)
-
-
-@app.command()
-def adjustment(
-    date: dt.date = typer.Argument(  # noqa: B008
-        default=_DATE_DEFAULT,
-        help="Date to fetch in YYYY-MM-DD format",
-        parser=_parse_date_arg,
-    ),
-    csv: bool = typer.Option(
-        default=False, help="Print the CSV as returned by OMIE, without parsing."
-    ),
-) -> None:
-    """Fetch the OMIE adjustment mechanism data (2022-06-14 to 2023-12-31)."""
-    _fetch_and_print(adjustment_price, date, csv)
 
 
 def _fetch_and_print(
