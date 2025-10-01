@@ -16,4 +16,3 @@ def test_help():
 
     help = res.stdout
     assert re.search(r"spot\s+Fetches the OMIE spot price data", help)
-    assert re.search(r"adjustment\s+Fetches the OMIE adjustment mechanism data", help)

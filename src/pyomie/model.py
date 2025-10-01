@@ -40,22 +40,6 @@ class SpotData(NamedTuple):
     spot_price_pt: OMIEDayHours
 
 
-class AdjustmentData(NamedTuple):
-    """OMIE marginal price (spot) market results for a given date."""
-
-    url: str
-    """URL where the data was obtained"""
-    market_date: str
-    """The date that these results pertain to."""
-    header: str
-    """File header."""
-
-    adjustment_price_es: OMIEDayHours
-    adjustment_price_pt: OMIEDayHours
-    adjustment_energy: OMIEDayHours
-    adjustment_unit_price: OMIEDayHours
-
-
 class OMIEResults(NamedTuple, Generic[_DataT]):
     """OMIE market results for a given date."""
 

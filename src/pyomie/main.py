@@ -8,7 +8,6 @@ from typing import Callable, NamedTuple, TypeVar
 from aiohttp import ClientSession
 
 from pyomie.model import (
-    AdjustmentData,
     OMIEDataSeries,
     OMIEResults,
     SpotData,
@@ -23,9 +22,6 @@ _DataT = TypeVar("_DataT")
 
 _HOURS = list(range(1, 26))
 #: Max number of hours in a day (on the day that DST ends).
-
-ADJUSTMENT_END_DATE = dt.date(2024, 1, 1)
-#: The date on which the adjustment mechanism is no longer applicable.
 
 # language=Markdown
 #
@@ -124,29 +120,6 @@ async def spot_price(
     )
 
 
-async def adjustment_price(
-    client_session: ClientSession, market_date: dt.date
-) -> OMIEResults[AdjustmentData] | None:
-    """
-    Fetches the adjustment mechanism data for a given date.
-
-    :param client_session: the HTTP session to use
-    :param market_date: the date to fetch data for
-    :return: the AdjustmentData or None
-    """
-    if market_date < ADJUSTMENT_END_DATE:
-        dc = DateComponents.decompose(market_date)
-        source = f"https://www.omie.es/sites/default/files/dados/AGNO_{dc.yy}/MES_{dc.MM}/TXT/INT_MAJ_EV_H_{dc.dd_MM_yy}_{dc.dd_MM_yy}.TXT"
-
-        return await _fetch_and_make_results(
-            client_session, source, market_date, _make_adjustment_data
-        )
-
-    else:
-        # adjustment mechanism ended in 2023
-        return None
-
-
 def _to_float(n: str) -> float:
     return float(n.replace(",", "."))
 
@@ -167,21 +140,6 @@ def _make_spot_data(res: OMIEDayResult) -> SpotData:
         energy_import_es_from_pt=s["Importación de España desde Portugal (MWh)"],
         spot_price_es=s["Precio marginal en el sistema español (EUR/MWh)"],
         spot_price_pt=s["Precio marginal en el sistema portugués (EUR/MWh)"],
-    )
-
-
-def _make_adjustment_data(res: OMIEDayResult) -> AdjustmentData:
-    s = res.series
-    return AdjustmentData(
-        header=res.header,
-        market_date=res.market_date.isoformat(),
-        url=res.url,
-        adjustment_price_es=s["Precio de ajuste en el sistema español (EUR/MWh)"],
-        adjustment_price_pt=s["Precio de ajuste en el sistema portugués (EUR/MWh)"],
-        adjustment_energy=s[
-            "Energía horaria sujeta al mecanismo de ajuste a los consumidores MIBEL (MWh)"  # noqa: E501
-        ],
-        adjustment_unit_price=s["Cuantía unitaria del ajuste (EUR/MWh)"],
     )
 
 
