@@ -20,8 +20,14 @@ _LOGGER = logging.getLogger(__name__)
 
 _DataT = TypeVar("_DataT")
 
-_HOURS = list(range(1, 26))
-#: Max number of hours in a day (on the day that DST ends).
+_QUARTER_HOURLY_START_DATE = dt.date(2025, 10, 1)
+#: The date on which the SDAC changed over to quarter-hourly pricing.
+
+_MAX_HOURS_IN_DAY = 25
+#: Max number of hours in a day (when DST ends there is 1 extra hour in a day).
+
+_ADJUSTMENT_END_DATE = dt.date(2024, 1, 1)
+#: The date on which the adjustment mechanism is no longer applicable.
 
 # language=Markdown
 #
@@ -82,9 +88,14 @@ async def _fetch_and_make_results(
 
         reader = csv.reader(csv_data, delimiter=";", skipinitialspace=True)
         rows = list(reader)
+        columns = range(1, 4 * _MAX_HOURS_IN_DAY + 1)
         day_series: OMIEDataSeries = {
-            row[0]: [_to_float(row[h]) for h in _HOURS if len(row) > h and row[h]]
-            for row in rows
+            row[0]: [
+                _to_float(row[column])
+                for column in columns
+                if len(row) > column and row[column]
+            ]
+            for row in rows[1:]
         }
 
         omie_meta = OMIEDayResult(
@@ -109,10 +120,13 @@ async def spot_price(
     Fetches the marginal price data for a given date.
 
     :param client_session: the HTTP session to use
-    :param market_date: the date to fetch data for
+    :param market_date: the date (>= 2025-10-01) to fetch data for
     :return: the SpotData or None
     """
     dc = DateComponents.decompose(market_date)
+    if dc.date < _QUARTER_HOURLY_START_DATE:
+        return None
+
     source = f"https://www.omie.es/sites/default/files/dados/AGNO_{dc.yy}/MES_{dc.MM}/TXT/INT_PBC_EV_H_1_{dc.dd_MM_yy}_{dc.dd_MM_yy}.TXT"
 
     return await _fetch_and_make_results(
@@ -130,16 +144,16 @@ def _make_spot_data(res: OMIEDayResult) -> SpotData:
         header=res.header,
         market_date=res.market_date.isoformat(),
         url=res.url,
-        energy_total_es_pt=s["Energía total con bilaterales del mercado Ibérico (MWh)"],
-        energy_purchases_es=s["Energía total de compra sistema español (MWh)"],
-        energy_purchases_pt=s["Energía total de compra sistema portugués (MWh)"],
-        energy_sales_es=s["Energía total de venta sistema español (MWh)"],
-        energy_sales_pt=s["Energía total de venta sistema portugués (MWh)"],
-        energy_es_pt=s["Energía total del mercado Ibérico (MWh)"],
-        energy_export_es_to_pt=s["Exportación de España a Portugal (MWh)"],
-        energy_import_es_from_pt=s["Importación de España desde Portugal (MWh)"],
-        spot_price_es=s["Precio marginal en el sistema español (EUR/MWh)"],
-        spot_price_pt=s["Precio marginal en el sistema portugués (EUR/MWh)"],
+        es_pt_total_power=s["Potencia total con bilaterales del mercado Ibérico (MW)"],
+        es_purchases_power=s["Potencia total de compra sistema español (MW)"],
+        pt_purchases_power=s["Potencia total de compra sistema portugués (MW)"],
+        es_sales_power=s["Potencia total de venta sistema español (MW)"],
+        pt_sales_power=s["Potencia total de venta sistema portugués (MW)"],
+        es_pt_power=s["Potencia total del mercado Ibérico (MW)"],
+        es_to_pt_exports_power=s["Exportación de España a Portugal (MW)"],
+        es_from_pt_imports_power=s["Importación de España desde Portugal (MW)"],
+        es_spot_price=s["Precio marginal en el sistema español (EUR/MWh)"],
+        pt_spot_price=s["Precio marginal en el sistema portugués (EUR/MWh)"],
     )
 
 
