@@ -1,6 +1,21 @@
 # CHANGELOG
 
 
+## v1.0.1 (2025-10-02)
+
+### Bug Fixes
+
+- Reintroduced util.localize_quarter_hourly_data ([#21](https://github.com/luuuis/pyomie/pull/21),
+  [`0b42859`](https://github.com/luuuis/pyomie/commit/0b4285927cbe2a50d52645e8521c4ee35b49f88a))
+
+### Documentation
+
+- Update README for v1.0.0 ([#20](https://github.com/luuuis/pyomie/pull/20),
+  [`63786af`](https://github.com/luuuis/pyomie/commit/63786af5abd04bb7f8e602f14cd4331639657bab))
+
+docs: update README for v1.x
+
+
 ## v1.0.0 (2025-10-01)
 
 ### Chores
