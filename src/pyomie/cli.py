@@ -35,7 +35,10 @@ def spot(
         parser=_parse_date_arg,
     ),
     csv: bool = typer.Option(
-        default=False, help="Print the CSV as returned by OMIE, without parsing."
+        False,
+        "--csv",
+        is_flag=True,
+        help="Print the CSV as returned by OMIE, without parsing.",
     ),
 ) -> None:
     """Fetch the OMIE spot price data."""
