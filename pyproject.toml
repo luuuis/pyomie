@@ -29,7 +29,7 @@ pyomie = "pyomie.cli:app"
 [tool.poetry.dependencies]
 python = "^3.11"
 rich = ">=10"
-typer = {extras = ["all"], version = "^0.15.0"}
+typer = {extras = ["all"], version = ">=0.12,<0.13"}
 aiohttp = "^3.9.1"
 
 
