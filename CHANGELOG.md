@@ -1,6 +1,15 @@
 # CHANGELOG
 
 
+## v1.0.2 (2025-11-02)
+
+### Bug Fixes
+
+- "secondary flag is not valid for non-boolean flag"
+  ([#23](https://github.com/luuuis/pyomie/pull/23),
+  [`904d106`](https://github.com/luuuis/pyomie/commit/904d1061602108d39375782b476d48dc0f0823f8))
+
+
 ## v1.0.1 (2025-10-02)
 
 ### Bug Fixes

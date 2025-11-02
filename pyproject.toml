@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyomie"
-version = "1.0.1"
+version = "1.0.2"
 description = "A client for OMIE - Spain and Portugal electricity market data"
 authors = ["Luis Miranda <soft.road8065@fastmail.com>"]
 license = "Apache-2.0"
