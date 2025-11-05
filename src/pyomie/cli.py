@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import datetime as dt
 import json
+import logging
 import sys
 from typing import Awaitable, Callable, NamedTuple, TypeVar
 
@@ -12,6 +13,8 @@ from aiohttp import ClientSession
 
 from pyomie.main import spot_price
 from pyomie.model import OMIEResults
+
+from . import LOGGER
 
 _NamedTupleT = TypeVar("_NamedTupleT", bound=NamedTuple)
 
@@ -40,8 +43,15 @@ def spot(
         is_flag=True,
         help="Print the CSV as returned by OMIE, without parsing.",
     ),
+    verbose: bool = typer.Option(
+        False,
+        "--verbose",
+        is_flag=True,
+        help="Verbose mode.",
+    ),
 ) -> None:
     """Fetch the OMIE spot price data."""
+    _configure_logging(verbose)
     _fetch_and_print(spot_price, date, csv)
 
 
@@ -64,6 +74,14 @@ def _fetch_and_print(
                 )
 
     asyncio.get_event_loop().run_until_complete(fetch_and_print())
+
+
+def _configure_logging(verbose: bool) -> None:
+    handler = logging.StreamHandler()
+    formatter = logging.Formatter("%(levelname)s %(message)s")
+    handler.setFormatter(formatter)
+    LOGGER.setLevel(logging.DEBUG if verbose else logging.WARNING)
+    LOGGER.addHandler(handler)
 
 
 if __name__ == "__main__":
