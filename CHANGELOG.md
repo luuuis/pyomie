@@ -1,6 +1,20 @@
 # CHANGELOG
 
 
+## v1.1.0 (2025-11-05)
+
+### Chores
+
+- Downgrade typer version for Home Assistant compatibility
+  ([#24](https://github.com/luuuis/pyomie/pull/24),
+  [`667cb9f`](https://github.com/luuuis/pyomie/commit/667cb9fe227a8dada34f4d24799cee407e2d3878))
+
+### Features
+
+- Add lib logging and --verbose option ([#25](https://github.com/luuuis/pyomie/pull/25),
+  [`9c86fe0`](https://github.com/luuuis/pyomie/commit/9c86fe0048922f81bf21465c79cca9576f6dddce))
+
+
 ## v1.0.2 (2025-11-02)
 
 ### Bug Fixes
