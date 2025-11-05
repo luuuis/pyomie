@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import datetime as dt
 import json
+import logging
 import sys
 from typing import Awaitable, Callable, NamedTuple, TypeVar
 
@@ -10,8 +11,10 @@ import aiohttp
 import typer
 from aiohttp import ClientSession
 
-from pyomie.main import adjustment_price, spot_price
+from pyomie.main import spot_price
 from pyomie.model import OMIEResults
+
+from . import LOGGER
 
 _NamedTupleT = TypeVar("_NamedTupleT", bound=NamedTuple)
 
@@ -35,26 +38,21 @@ def spot(
         parser=_parse_date_arg,
     ),
     csv: bool = typer.Option(
-        default=False, help="Print the CSV as returned by OMIE, without parsing."
+        False,
+        "--csv",
+        is_flag=True,
+        help="Print the CSV as returned by OMIE, without parsing.",
+    ),
+    verbose: bool = typer.Option(
+        False,
+        "--verbose",
+        is_flag=True,
+        help="Verbose mode.",
     ),
 ) -> None:
     """Fetch the OMIE spot price data."""
+    _configure_logging(verbose)
     _fetch_and_print(spot_price, date, csv)
-
-
-@app.command()
-def adjustment(
-    date: dt.date = typer.Argument(  # noqa: B008
-        default=_DATE_DEFAULT,
-        help="Date to fetch in YYYY-MM-DD format",
-        parser=_parse_date_arg,
-    ),
-    csv: bool = typer.Option(
-        default=False, help="Print the CSV as returned by OMIE, without parsing."
-    ),
-) -> None:
-    """Fetch the OMIE adjustment mechanism data (2022-06-14 to 2023-12-31)."""
-    _fetch_and_print(adjustment_price, date, csv)
 
 
 def _fetch_and_print(
@@ -76,6 +74,14 @@ def _fetch_and_print(
                 )
 
     asyncio.get_event_loop().run_until_complete(fetch_and_print())
+
+
+def _configure_logging(verbose: bool) -> None:
+    handler = logging.StreamHandler()
+    formatter = logging.Formatter("%(levelname)s %(message)s")
+    handler.setFormatter(formatter)
+    LOGGER.setLevel(logging.DEBUG if verbose else logging.WARNING)
+    LOGGER.addHandler(handler)
 
 
 if __name__ == "__main__":

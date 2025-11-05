@@ -2,34 +2,29 @@ import datetime as dt
 
 from zoneinfo import ZoneInfo
 
-from pyomie.model import OMIEDayHours
+from pyomie.model import OMIEDayQuarters
 
 _CET = ZoneInfo("CET")
 
 
-def localize_hourly_data(
+def localize_quarter_hourly_data(
     date: dt.date,
-    hourly_data: OMIEDayHours,
+    quarter_hourly_data: OMIEDayQuarters,
 ) -> dict[str, float]:
     """
-    Localize incoming hourly data to the CET timezone.
+    Localize incoming quarter-hourly data to the CET timezone.
 
     This is especially useful on days that are DST boundaries and
-    that may have 23 or 25 hours.
+    that may have 23 or 25 hours to avoid any ambiguities in the data.
 
     :param date: the date that the values relate to
-    :param hourly_data: the hourly values
+    :param quarter_hourly_data: the quarter-hourly values
     :return: a dict containing the hourly values indexed by their starting
              time (ISO8601 formatted)
     """
-    hours_in_day = len(
-        hourly_data
-    )  # between 23 and 25 (inclusive) due to DST changeover
-    midnight = dt.datetime(date.year, date.month, date.day, tzinfo=_CET).astimezone(
-        dt.timezone.utc
-    )
+    midnight = dt.datetime(date.year, date.month, date.day, tzinfo=_CET)
 
     return {
-        (midnight + dt.timedelta(hours=h)).astimezone(_CET).isoformat(): hourly_data[h]
-        for h in range(hours_in_day)
+        (midnight + dt.timedelta(minutes=15 * qh)).isoformat(): datum
+        for qh, datum in enumerate(quarter_hourly_data)
     }

@@ -25,6 +25,7 @@ jobs:
   commitlint:
     name: Lint Commit Messages
     runs-on: ubuntu-latest
+    if: github.ref != 'refs/heads/main'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -50,6 +51,10 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - uses: snok/install-poetry@v1.3.4
+      - name: Install tzdata on Windows
+        if: runner.os == 'Windows'
+        run: poetry run pip install tzdata
+        shell: bash
       - name: Install Dependencies
         run: poetry install
         shell: bash
@@ -66,7 +71,11 @@ jobs:
       - test
       - lint
       - commitlint
-
+    if: |
+      always() &&
+      needs.test.result == 'success' &&
+      needs.lint.result == 'success' &&
+      needs.commitlint.result != 'failure'
     runs-on: ubuntu-latest
     environment: release
     concurrency: release
@@ -82,14 +91,14 @@ jobs:
 
       # Do a dry run of PSR
       - name: Test release
-        uses: luuuis/python-semantic-release@a10d5823dfc89d835bad06d8544b22610eafafb5
+        uses: python-semantic-release/python-semantic-release@v9
         if: github.ref_name != 'main'
         with:
           root_options: --noop
 
       # On main branch: actual PSR + upload to PyPI & GitHub
       - name: Release
-        uses: luuuis/python-semantic-release@a10d5823dfc89d835bad06d8544b22610eafafb5
+        uses: python-semantic-release/python-semantic-release@v9
         id: release
         if: github.ref_name == 'main'
         with:

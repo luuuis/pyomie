@@ -1,9 +1,9 @@
 [tool.poetry]
 name = "pyomie"
-version = "0.1.1"
+version = "1.0.2"
 description = "A client for OMIE - Spain and Portugal electricity market data"
 authors = ["Luis Miranda <soft.road8065@fastmail.com>"]
-license = "Apache Software License 2.0"
+license = "Apache-2.0"
 readme = "README.md"
 repository = "https://github.com/luuuis/pyomie"
 documentation = "https://pyomie.readthedocs.io"
@@ -29,8 +29,9 @@ pyomie = "pyomie.cli:app"
 [tool.poetry.dependencies]
 python = "^3.11"
 rich = ">=10"
-typer = {extras = ["all"], version = "^0.9.0"}
+typer = {extras = ["all"], version = ">=0.12,<0.13"}
 aiohttp = "^3.9.1"
+
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.0"
@@ -38,6 +39,7 @@ pytest-cov = "^3.0"
 aioresponses = "^0.7.6"
 deepdiff = "^6.7.1"
 pytest-asyncio = "^0.23.3"
+pre-commit = "^4.3.0"
 
 [tool.poetry.group.docs]
 optional = true
