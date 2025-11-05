@@ -1,10 +1,7 @@
 from __future__ import annotations
 
-import logging
 from datetime import date, datetime
 from typing import Generic, NamedTuple, TypeVar
-
-_LOGGER = logging.getLogger(__name__)
 
 OMIEDayQuarters = list[float]
 #: A sequence of quarter-hourly values relating to a single day.
