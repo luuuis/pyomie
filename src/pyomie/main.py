@@ -83,6 +83,7 @@ async def _fetch_and_make_results(
         lines = response_text.splitlines()
         header = lines[0]
         csv_data = lines[2:]
+        resp.raise_for_status()
 
         reader = csv.reader(csv_data, delimiter=";", skipinitialspace=True)
         rows = list(reader)
