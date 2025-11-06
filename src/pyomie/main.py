@@ -72,12 +72,11 @@ async def _fetch_and_make_results(
     source: str,
     market_date: dt.date,
     make_result: Callable[[OMIEDayResult], OMIEDataT],
-) -> OMIEResults[OMIEDataT] | None:
+) -> OMIEResults[OMIEDataT]:
     async with await session.get(
         source, timeout=DEFAULT_TIMEOUT.total_seconds()
     ) as resp:
-        if resp.status == 404:
-            return None
+        resp.raise_for_status()
 
         response_text = await resp.text(encoding="iso-8859-1")
         lines = response_text.splitlines()
@@ -114,7 +113,7 @@ async def _fetch_and_make_results(
 
 async def spot_price(
     client_session: ClientSession, market_date: dt.date
-) -> OMIEResults[SpotData] | None:
+) -> OMIEResults[SpotData]:
     """
     Fetches the marginal price data for a given date.
 
@@ -124,8 +123,9 @@ async def spot_price(
     """
     dc = DateComponents.decompose(market_date)
     if dc.date < _QUARTER_HOURLY_START_DATE:
-        LOGGER.warning(f"Dates <{_QUARTER_HOURLY_START_DATE} are not supported.")
-        return None
+        raise ValueError(
+            f"Dates earlier than {_QUARTER_HOURLY_START_DATE} are not supported."
+        )
 
     source = f"https://www.omie.es/sites/default/files/dados/AGNO_{dc.yy}/MES_{dc.MM}/TXT/INT_PBC_EV_H_1_{dc.dd_MM_yy}_{dc.dd_MM_yy}.TXT"
 

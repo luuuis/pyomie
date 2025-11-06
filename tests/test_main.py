@@ -2,6 +2,7 @@ import datetime as dt
 import json
 
 import pytest
+from aiohttp import ClientResponseError
 from deepdiff.diff import DeepDiff
 
 from pyomie.main import spot_price
@@ -10,20 +11,27 @@ from .fixture import read_file
 
 
 @pytest.mark.asyncio
-async def test_spot_price_404(session, mock_server):
+@pytest.mark.parametrize("status_code", [404, 403, 500, 502, 503])
+async def test_spot_price_http_error(session, mock_server, status_code):
     mock_server.get(
-        "https://www.omie.es/sites/default/files/dados/AGNO_1970/MES_01/TXT/INT_PBC_EV_H_1_01_01_1970_01_01_1970.TXT",
-        status=404,
+        "https://www.omie.es/sites/default/files/dados/AGNO_2970/MES_01/TXT/INT_PBC_EV_H_1_01_01_2970_01_01_2970.TXT",
+        status=status_code,
     )
 
-    resp = await spot_price(session, dt.date(1970, 1, 1))
-    assert resp is None
+    with pytest.raises(ClientResponseError) as e_info:
+        await spot_price(session, dt.date(2970, 1, 1))
+
+    exc = e_info.value
+    assert exc.status == status_code
 
 
 @pytest.mark.asyncio
 async def test_spot_price_24h_day(session):
-    result = await spot_price(session, dt.date(2024, 9, 30))
-    assert result is None  # < 2025-10-01 no longer supported
+    with pytest.raises(ValueError) as e_info:
+        await spot_price(session, dt.date(2024, 9, 30))
+
+    exc = e_info.value
+    assert str(exc) == "Dates earlier than 2025-10-01 are not supported."
 
 
 @pytest.mark.asyncio
