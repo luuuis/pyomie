@@ -11,10 +11,9 @@ import aiohttp
 import typer
 from aiohttp import ClientSession
 
-from pyomie.main import spot_price
-from pyomie.model import OMIEResults
-
-from . import LOGGER
+from . import LOGGER, QUARTER_HOURLY_START_DATE
+from .main import spot_price
+from .model import OMIEResults
 
 _NamedTupleT = TypeVar("_NamedTupleT", bound=NamedTuple)
 
@@ -24,10 +23,13 @@ _DATE_DEFAULT = "today's date"
 
 
 def _parse_date_arg(a_date: str) -> dt.date:
-    if a_date is _DATE_DEFAULT:
-        return dt.date.today()
-    else:
-        return dt.date.fromisoformat(a_date)
+    date = dt.date.fromisoformat(a_date) if a_date != _DATE_DEFAULT else dt.date.today()
+    if date < QUARTER_HOURLY_START_DATE:
+        raise typer.BadParameter(
+            f"Dates earlier than {QUARTER_HOURLY_START_DATE} are not supported."
+        )
+
+    return date
 
 
 @app.command()
@@ -52,7 +54,7 @@ def spot(
 ) -> None:
     """Fetch the OMIE spot price data."""
     _configure_logging(verbose)
-    _fetch_and_print(spot_price, date, csv)
+    _fetch_and_print(spot_price, date, csv, verbose)
 
 
 def _fetch_and_print(
@@ -61,6 +63,7 @@ def _fetch_and_print(
     ],
     market_date: dt.date,
     print_raw: bool,
+    verbose: bool,
 ) -> None:
     async def fetch_and_print() -> None:
         async with aiohttp.ClientSession() as session:
@@ -73,7 +76,14 @@ def _fetch_and_print(
                     else json.dumps(fetched_data.contents._asdict())
                 )
 
-    asyncio.get_event_loop().run_until_complete(fetch_and_print())
+    try:
+        asyncio.get_event_loop().run_until_complete(fetch_and_print())
+    except Exception as e:
+        if verbose:
+            raise
+        else:
+            typer.echo(f"Error: {e}", err=True)
+            raise typer.Exit(code=1) from e
 
 
 def _configure_logging(verbose: bool) -> None:

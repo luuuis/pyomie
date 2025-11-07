@@ -6,20 +6,12 @@ from typing import Callable, NamedTuple, TypeVar
 
 from aiohttp import ClientSession
 
-from pyomie.model import (
-    OMIEDataSeries,
-    OMIEResults,
-    SpotData,
-)
-
-from . import LOGGER
+from . import LOGGER, QUARTER_HOURLY_START_DATE
+from .model import OMIEDataSeries, OMIEResults, SpotData
 
 DEFAULT_TIMEOUT = dt.timedelta(seconds=10)
 
 _DataT = TypeVar("_DataT")
-
-_QUARTER_HOURLY_START_DATE = dt.date(2025, 10, 1)
-#: The date on which the SDAC changed over to quarter-hourly pricing.
 
 _MAX_HOURS_IN_DAY = 25
 #: Max number of hours in a day (when DST ends there is 1 extra hour in a day).
@@ -72,17 +64,17 @@ async def _fetch_and_make_results(
     source: str,
     market_date: dt.date,
     make_result: Callable[[OMIEDayResult], OMIEDataT],
-) -> OMIEResults[OMIEDataT] | None:
+) -> OMIEResults[OMIEDataT]:
     async with await session.get(
         source, timeout=DEFAULT_TIMEOUT.total_seconds()
     ) as resp:
-        if resp.status == 404:
-            return None
+        resp.raise_for_status()
 
         response_text = await resp.text(encoding="iso-8859-1")
         lines = response_text.splitlines()
         header = lines[0]
         csv_data = lines[2:]
+        resp.raise_for_status()
 
         reader = csv.reader(csv_data, delimiter=";", skipinitialspace=True)
         rows = list(reader)
@@ -113,7 +105,7 @@ async def _fetch_and_make_results(
 
 async def spot_price(
     client_session: ClientSession, market_date: dt.date
-) -> OMIEResults[SpotData] | None:
+) -> OMIEResults[SpotData]:
     """
     Fetches the marginal price data for a given date.
 
@@ -122,9 +114,10 @@ async def spot_price(
     :return: the SpotData or None
     """
     dc = DateComponents.decompose(market_date)
-    if dc.date < _QUARTER_HOURLY_START_DATE:
-        LOGGER.warning(f"Dates <{_QUARTER_HOURLY_START_DATE} are not supported.")
-        return None
+    if dc.date < QUARTER_HOURLY_START_DATE:
+        raise ValueError(
+            f"Dates earlier than {QUARTER_HOURLY_START_DATE} are not supported."
+        )
 
     source = f"https://www.omie.es/sites/default/files/dados/AGNO_{dc.yy}/MES_{dc.MM}/TXT/INT_PBC_EV_H_1_{dc.dd_MM_yy}_{dc.dd_MM_yy}.TXT"
 
