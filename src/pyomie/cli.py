@@ -54,7 +54,7 @@ def spot(
 ) -> None:
     """Fetch the OMIE spot price data."""
     _configure_logging(verbose)
-    _fetch_and_print(spot_price, date, csv)
+    _fetch_and_print(spot_price, date, csv, verbose)
 
 
 def _fetch_and_print(
@@ -63,6 +63,7 @@ def _fetch_and_print(
     ],
     market_date: dt.date,
     print_raw: bool,
+    verbose: bool,
 ) -> None:
     async def fetch_and_print() -> None:
         async with aiohttp.ClientSession() as session:
@@ -75,7 +76,14 @@ def _fetch_and_print(
                     else json.dumps(fetched_data.contents._asdict())
                 )
 
-    asyncio.get_event_loop().run_until_complete(fetch_and_print())
+    try:
+        asyncio.get_event_loop().run_until_complete(fetch_and_print())
+    except Exception as e:
+        if verbose:
+            raise
+        else:
+            typer.echo(f"Error: {e}", err=True)
+            raise typer.Exit(code=1) from e
 
 
 def _configure_logging(verbose: bool) -> None:
