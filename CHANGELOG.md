@@ -1,6 +1,15 @@
 # CHANGELOG
 
 
+## v1.1.3 (2025-11-07)
+
+### Bug Fixes
+
+- Typerargument.make_metavar() takes 1 positional argument but 2 were given
+  ([#29](https://github.com/luuuis/pyomie/pull/29),
+  [`63f3ce5`](https://github.com/luuuis/pyomie/commit/63f3ce54e68d4f57a423e0c628a24b27a3f1313c))
+
+
 ## v1.1.2 (2025-11-07)
 
 ### Bug Fixes
