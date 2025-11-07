@@ -31,11 +31,8 @@ python = "^3.11"
 rich = ">=10"
 typer = {extras = ["all"], version = ">=0.12,<0.13"}
 aiohttp = "^3.9.1"
-
-[tool.poetry.group.overrides.dependencies]
-# This is needed to use Typer <0.16 (Home Assistant won't accept newer
-# versions due to a transitive dependency).
-# https://github.com/fastapi/typer/discussions/1215
+# Click version constraint needed for Typer <0.13 compatibility
+# Click 8.2.0+ breaks Typer 0.12.x: TyperArgument.make_metavar() signature changed
 click = "<8.2.0"
 
 [tool.poetry.group.dev.dependencies]
