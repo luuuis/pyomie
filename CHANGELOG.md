@@ -1,6 +1,20 @@
 # CHANGELOG
 
 
+## v1.1.1 (2025-11-07)
+
+### Bug Fixes
+
+- Raise Exception for HTTP errors, no longer return None
+  ([#27](https://github.com/luuuis/pyomie/pull/27),
+  [`a72e96b`](https://github.com/luuuis/pyomie/commit/a72e96bebb80c5b206947ed01d4fcd9d3e1ec0c6))
+
+### Chores
+
+- Improvements to README ([#26](https://github.com/luuuis/pyomie/pull/26),
+  [`e949e22`](https://github.com/luuuis/pyomie/commit/e949e22d663c06f4437b24aff4af8d722dcae930))
+
+
 ## v1.1.0 (2025-11-05)
 
 ### Chores
