@@ -11,10 +11,9 @@ import aiohttp
 import typer
 from aiohttp import ClientSession
 
-from pyomie.main import spot_price
-from pyomie.model import OMIEResults
-
-from . import LOGGER
+from . import LOGGER, QUARTER_HOURLY_START_DATE
+from .main import spot_price
+from .model import OMIEResults
 
 _NamedTupleT = TypeVar("_NamedTupleT", bound=NamedTuple)
 
@@ -24,10 +23,13 @@ _DATE_DEFAULT = "today's date"
 
 
 def _parse_date_arg(a_date: str) -> dt.date:
-    if a_date is _DATE_DEFAULT:
-        return dt.date.today()
-    else:
-        return dt.date.fromisoformat(a_date)
+    date = dt.date.fromisoformat(a_date) if a_date != _DATE_DEFAULT else dt.date.today()
+    if date < QUARTER_HOURLY_START_DATE:
+        raise typer.BadParameter(
+            f"Dates earlier than {QUARTER_HOURLY_START_DATE} are not supported."
+        )
+
+    return date
 
 
 @app.command()

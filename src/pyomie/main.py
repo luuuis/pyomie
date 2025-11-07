@@ -6,20 +6,12 @@ from typing import Callable, NamedTuple, TypeVar
 
 from aiohttp import ClientSession
 
-from pyomie.model import (
-    OMIEDataSeries,
-    OMIEResults,
-    SpotData,
-)
-
-from . import LOGGER
+from . import LOGGER, QUARTER_HOURLY_START_DATE
+from .model import OMIEDataSeries, OMIEResults, SpotData
 
 DEFAULT_TIMEOUT = dt.timedelta(seconds=10)
 
 _DataT = TypeVar("_DataT")
-
-_QUARTER_HOURLY_START_DATE = dt.date(2025, 10, 1)
-#: The date on which the SDAC changed over to quarter-hourly pricing.
 
 _MAX_HOURS_IN_DAY = 25
 #: Max number of hours in a day (when DST ends there is 1 extra hour in a day).
@@ -122,9 +114,9 @@ async def spot_price(
     :return: the SpotData or None
     """
     dc = DateComponents.decompose(market_date)
-    if dc.date < _QUARTER_HOURLY_START_DATE:
+    if dc.date < QUARTER_HOURLY_START_DATE:
         raise ValueError(
-            f"Dates earlier than {_QUARTER_HOURLY_START_DATE} are not supported."
+            f"Dates earlier than {QUARTER_HOURLY_START_DATE} are not supported."
         )
 
     source = f"https://www.omie.es/sites/default/files/dados/AGNO_{dc.yy}/MES_{dc.MM}/TXT/INT_PBC_EV_H_1_{dc.dd_MM_yy}_{dc.dd_MM_yy}.TXT"
