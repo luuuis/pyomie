@@ -7,7 +7,7 @@
 project = "pyomie"
 copyright = "2022-2024, Luis Miranda"
 author = "Luis Miranda"
-release = "1.1.1"
+release = "1.1.2"
 
 # General configuration
 extensions = [

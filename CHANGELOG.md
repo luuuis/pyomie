@@ -1,6 +1,17 @@
 # CHANGELOG
 
 
+## v1.1.2 (2025-11-07)
+
+### Bug Fixes
+
+- Typerargument.make_metavar() takes 1 positional argument but 2 were given
+  ([#28](https://github.com/luuuis/pyomie/pull/28),
+  [`60f6f3f`](https://github.com/luuuis/pyomie/commit/60f6f3f7a0e26705dbaccd209310971b6039f760))
+
+fix: pin click version <8.2.0
+
+
 ## v1.1.1 (2025-11-07)
 
 ### Bug Fixes
