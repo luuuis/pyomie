@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import csv
 import datetime as dt
-from typing import Callable, NamedTuple, TypeVar
+from collections.abc import Callable
+from typing import NamedTuple, TypeVar
 
 from aiohttp import ClientSession
 
@@ -96,7 +97,7 @@ async def _fetch_and_make_results(
         )
 
         return OMIEResults(
-            updated_at=dt.datetime.now(dt.timezone.utc),
+            updated_at=dt.datetime.now(dt.UTC),
             market_date=market_date,
             contents=make_result(omie_meta),
             raw=response_text,
