@@ -27,8 +27,6 @@
 
 ---
 
-**Documentation**: <a href="https://pyomie.readthedocs.io" target="_blank">https://pyomie.readthedocs.io </a>
-
 **Source Code**: <a href="https://github.com/luuuis/pyomie" target="_blank">https://github.com/luuuis/pyomie </a>
 
 ---
