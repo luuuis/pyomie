@@ -1,7 +1,6 @@
 import aiohttp
-import pytest
 import pytest_asyncio
-from aioresponses import aioresponses
+from aiointercept import aiointercept
 
 
 @pytest_asyncio.fixture
@@ -10,7 +9,7 @@ async def session():
         yield session
 
 
-@pytest.fixture
-def mock_server():
-    with aioresponses() as m:
+@pytest_asyncio.fixture
+async def mock_server():
+    async with aiointercept(mock_external_urls=True) as m:
         yield m

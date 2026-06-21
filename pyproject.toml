@@ -34,13 +34,13 @@ aiohttp = "^3.9.1"
 # Click version constraint needed for Typer <0.13 compatibility
 # Click 8.2.0+ breaks Typer 0.12.x: TyperArgument.make_metavar() signature changed
 click = "<8.2.0"
+aiointercept = "^0.1.7"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^7.0"
+pytest = "^8.0"
 pytest-cov = "^3.0"
-aioresponses = "^0.7.6"
 deepdiff = "^6.7.1"
-pytest-asyncio = "^0.23.3"
+pytest-asyncio = "^1.4.0"
 pre-commit = "^4.3.0"
 
 [tool.poetry.group.docs]
