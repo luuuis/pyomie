@@ -1,5 +1,6 @@
 import re
 
+import pytest
 from typer.testing import CliRunner
 
 from pyomie.cli import app
@@ -7,6 +8,7 @@ from pyomie.cli import app
 runner = CliRunner()
 
 
+@pytest.mark.cli
 def test_help():
     """The help message includes the CLI name."""
     res = runner.invoke(app, ["--help"])

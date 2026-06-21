@@ -32,7 +32,44 @@ jobs:
           fetch-depth: 0
       - uses: wagoid/commitlint-github-action@v5.4.4
 
-  test:
+  test-library:
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version:
+          - "3.12"
+          - "3.14"
+        os:
+          - ubuntu-latest
+        include:
+          - python-version: "3.14"
+            os: windows-latest
+          - python-version: "3.14"
+            os: macOS-latest
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - uses: snok/install-poetry@v1.3.4
+      - name: Install tzdata on Windows
+        if: runner.os == 'Windows'
+        run: poetry run pip install tzdata
+        shell: bash
+      - name: Install Dependencies
+        run: poetry install
+        shell: bash
+      - name: Test with Pytest
+        run: poetry run pytest -m "not cli" --cov-report=xml
+        shell: bash
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+  test-cli:
     strategy:
       fail-fast: false
       matrix:
@@ -62,7 +99,7 @@ jobs:
         run: poetry install --extras cli
         shell: bash
       - name: Test with Pytest
-        run: poetry run pytest --cov-report=xml
+        run: poetry run pytest -m "cli" --cov-report=xml
         shell: bash
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
@@ -71,12 +108,14 @@ jobs:
 
   release:
     needs:
-      - test
+      - test-library
+      - test-cli
       - lint
       - commitlint
     if: |
       always() &&
-      needs.test.result == 'success' &&
+      needs.test-library.result == 'success' &&
+      needs.test-cli.result == 'success' &&
       needs.lint.result == 'success' &&
       needs.commitlint.result != 'failure'
     runs-on: ubuntu-latest

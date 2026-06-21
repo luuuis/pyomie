@@ -78,6 +78,9 @@ prerelease = true
 [tool.pytest.ini_options]
 addopts = "-v -Wdefault --cov=pyomie --cov-report=term-missing:skip-covered"
 pythonpath = ["src"]
+markers = [
+    "cli: tests that require the [cli] optional extra (typer, rich, click)",
+]
 
 [tool.coverage.run]
 branch = true
