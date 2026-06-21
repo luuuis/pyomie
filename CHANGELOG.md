@@ -1,6 +1,25 @@
 # CHANGELOG
 
 
+## v1.2.0 (2026-06-21)
+
+### Chores
+
+- **deps**: Migrated to aiointercept ([#16](https://github.com/luuuis/pyomie/pull/16),
+  [`f6e45f3`](https://github.com/luuuis/pyomie/commit/f6e45f3689139724499ee38364a98da371a4cd0b))
+
+* chore: migrated to aiointercept
+
+fixes bugs caused by aioresponses using a private constructor.
+
+https://github.com/aio-libs/aiohttp/issues/12815#issuecomment-4632480680
+
+### Features
+
+- Python 3.14 CLI support ([#30](https://github.com/luuuis/pyomie/pull/30),
+  [`a666d50`](https://github.com/luuuis/pyomie/commit/a666d50832103ee29ecb2f8b1a9fed53b9683231))
+
+
 ## v1.1.3 (2025-11-07)
 
 ### Bug Fixes

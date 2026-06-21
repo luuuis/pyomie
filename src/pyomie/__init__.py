@@ -1,4 +1,4 @@
-__version__ = "1.1.3"
+__version__ = "1.2.0"
 
 import datetime as dt
 from logging import Logger, getLogger
