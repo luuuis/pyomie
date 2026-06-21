@@ -37,14 +37,11 @@ jobs:
       fail-fast: false
       matrix:
         python-version:
-          - "3.11"
           - "3.12"
-          - "3.13"
           - "3.14"
         os:
           - ubuntu-latest
         include:
-          # Test Windows and macOS with the latest Python only
           - python-version: "3.14"
             os: windows-latest
           - python-version: "3.14"
