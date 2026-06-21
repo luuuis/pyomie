@@ -5,7 +5,8 @@ import datetime as dt
 import json
 import logging
 import sys
-from typing import Awaitable, Callable, NamedTuple, TypeVar
+from collections.abc import Awaitable, Callable
+from typing import NamedTuple, TypeVar
 
 import aiohttp
 import typer

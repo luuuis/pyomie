@@ -1,5 +1,4 @@
 import datetime as dt
-
 from zoneinfo import ZoneInfo
 
 from pyomie.model import OMIEDayQuarters
