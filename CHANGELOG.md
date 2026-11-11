@@ -1,6 +1,69 @@
 # CHANGELOG
 
 
+## v1.2.1 (2026-11-11)
+
+### Bug Fixes
+
+- Add tzdata as a library dependency ([#37](https://github.com/luuuis/pyomie/pull/37),
+  [`ea8bbc3`](https://github.com/luuuis/pyomie/commit/ea8bbc334d0afaf1c9d76f60dda9b6afd755d9a3))
+
+ubuntu-latest moved to ubuntu-24.04 which no longer includes system timezone data, breaking
+  ZoneInfo("CET") in util.py. tzdata was previously installed as a CI workaround for Windows only,
+  but belongs as a proper library dependency since the code requires it on any platform without
+  system tzdata.
+
+- **util**: Localize quarter-hourly keys to real instants on DST days
+  ([#32](https://github.com/luuuis/pyomie/pull/32),
+  [`0415b7e`](https://github.com/luuuis/pyomie/commit/0415b7eae9cb1fc8aa0e57e39b569e0aa4f2dfba))
+
+`localize_quarter_hourly_data` added each quarter-hour to a CET-aware `datetime`, which moves the
+  wall clock: ZoneInfo resolves the offset for the resulting wall time, so on a DST boundary day
+  every key after the transition landed one hour off -- a 25-hour day left 01:00-01:45Z unaddressed
+  and pushed its last keys onto the next day, while a 23-hour day collapsed 92 values onto 88
+  instants.
+
+Step the quarter-hours in UTC and convert each key back to CET instead, so every key carries the
+  offset in effect at its own instant. Normal 24-hour days are unchanged.
+
+Regression tests cover the 2026-10-25 fall-back day (100 values) and the 2027-03-28 spring-forward
+  day (92 values), asserting the keys are strictly increasing instants 15 minutes apart and pinning
+  the instants the reported issue names.
+
+Refs: luuuis/hass_omie#126
+
+Signed-off-by: Fernando Cunha <tabascoz@gmail.com>
+
+### Build System
+
+- Fix checkout action for branches in forks ([#33](https://github.com/luuuis/pyomie/pull/33),
+  [`9790380`](https://github.com/luuuis/pyomie/commit/9790380f4283a368eb0af7de93a8f47421dd17cb))
+
+- Fix ref name in checkout action for PRs in branches
+  ([#35](https://github.com/luuuis/pyomie/pull/35),
+  [`8baac23`](https://github.com/luuuis/pyomie/commit/8baac2363498137f631694a6cb9a176b905bfc19))
+
+- Remove labels workflow ([#34](https://github.com/luuuis/pyomie/pull/34),
+  [`7865721`](https://github.com/luuuis/pyomie/commit/7865721345a7e6018b09b44bb690168633612112))
+
+- Skip python-semantic-release ([#36](https://github.com/luuuis/pyomie/pull/36),
+  [`eeab703`](https://github.com/luuuis/pyomie/commit/eeab7038214140e243e42c65c65860b9887335f2))
+
+fix(ci): fix PSR dry-run for fork PRs
+
+PR checkouts (both fork and non-fork) are in detached HEAD state, which prevents PSR from matching
+  any release group. Attach HEAD to a named branch before the PSR dry-run so it works uniformly for
+  all PRs without special-casing forks.
+
+- Use GH_PAT for release instead of GITHUB_TOKEN ([#38](https://github.com/luuuis/pyomie/pull/38),
+  [`53775ba`](https://github.com/luuuis/pyomie/commit/53775bafc7966c854d04df3f37d403eb7c8857eb))
+
+### Chores
+
+- **deps**: Upgrade dependencies ([#31](https://github.com/luuuis/pyomie/pull/31),
+  [`522bf4d`](https://github.com/luuuis/pyomie/commit/522bf4da23318acba486d53717857e3169b7a90e))
+
+
 ## v1.2.0 (2026-06-21)
 
 ### Chores
