@@ -30,6 +30,7 @@ pyomie = "pyomie.cli:app"
 python = "^3.11"
 aiohttp = ">=3.9.1"
 aiointercept = "^0.1.7"
+tzdata = ">=2023.0"
 # CLI extras: install with `pip install pyomie[cli]`
 rich = {version = ">=13", optional = true}
 typer = {extras = ["all"], version = ">=0.13", optional = true}
