@@ -68,7 +68,7 @@ By default, the output is a JSON payload that may be used by other tooling.
 {"date":"2025-10-02","average_pt":86.3228125}
 ```
 
-You can also `pipx run pyomie` to [run the CLI from a temporary virtual environment](https://pipx.pypa.io/stable/#walkthrough-installing-a-package-and-its-applications-with-pipx).
+You can also `pipx run "pyomie[cli]"` to [run the CLI from a temporary virtual environment](https://pipx.pypa.io/stable/#walkthrough-installing-a-package-and-its-applications-with-pipx).
 
 ## Contributors ✨
 
