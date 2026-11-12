@@ -81,7 +81,8 @@ Thanks to these contributors ([emoji key](https://allcontributors.org/docs/en/em
 <table>
   <tbody>
     <tr>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/luuuis"><img src="https://avatars.githubusercontent.com/u/161006?v=4?s=80" width="80px;" alt="Luis Miranda"/><br /><sub><b>Luis Miranda</b></sub></a><br /><a href="https://github.com/luuuis/pyomie/commits?author=luuuis" title="Code">💻</a> <a href="#ideas-luuuis" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/luuuis/pyomie/commits?author=luuuis" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/luuuis"><img src="https://avatars.githubusercontent.com/u/161006?v=4&size=80" width="80px" height="80px" alt="Luis Miranda"/><br /><sub><b>Luis Miranda</b></sub></a><br /><a href="https://github.com/luuuis/pyomie/commits?author=luuuis" title="Code">💻</a> <a href="#ideas-luuuis" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/luuuis/pyomie/commits?author=luuuis" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/tabascoz"><img src="https://avatars.githubusercontent.com/u/10350083?v=4&size=80" width="80px" height="80px" alt="Fernando Cunha"/><br /><sub><b>Fernando Cunha</b></sub></a><br /><a href="https://github.com/luuuis/pyomie/commits?author=tabascoz" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>

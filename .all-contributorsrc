@@ -20,8 +20,18 @@
         "ideas",
         "doc"
       ]
+    },
+    {
+      "login": "tabascoz",
+      "name": "Fernando Cunha",
+      "avatar_url": "https://avatars.githubusercontent.com/u/10350083?v=4",
+      "profile": "https://github.com/tabascoz",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
-  "skipCi": true
+  "skipCi": true,
+  "commitType": "docs"
 }
